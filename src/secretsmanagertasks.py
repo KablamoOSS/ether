@@ -4,6 +4,7 @@ import secretsmanager
 import uuid
 import awsinputs
 import kmstasks
+import json
 from botocore.exceptions import ClientError
 
 
@@ -17,30 +18,57 @@ class secretsmanagertasks:
         password = self.sm.get_random_password()
         print(password)
 
-    def upsertSecretString(self, name, secret, description, kmskey="aws/secretsmanager", token=None):
-        if !awsinputs.IsKMSArn(kmskey):
-            kmskey = self.kms.getKeyARNbyAlias(kmskey)
+    def upsertSecretString(self, name, secret, description, kmskey=None, tags=None, token=None, logoutput=None):
+        #if not awsinputs.IsKMSArn(kmskey) or kmskey=="aws/secretsmanager":
+        #    kmskey = self.kms.getKeyARNbyAlias(kmskey)
         if token is None:
             token = self.generateClientToken()
         exists = self.getSecretbyName(name)
         if exists:
-            response = self.sm.update_secret_string(
-                SecretId=name,
-                SecretString=secret,
-                ClientRequestToken=token,
-                Description=description, 
-                KmsKeyId=kmskeyid
-            )
+            try:
+                response = self.sm.update_secret_string(
+                    SecretId=name,
+                    SecretString=secret,
+                    ClientRequestToken=token,
+                    Description=description, 
+                    KmsKeyId=kmskey
+                )
+            except ClientError as err:
+                print err
+                sys.exit(1)
         else:
-            response = self.sm.update_secret_string(
-                SecretId=name,
-                SecretString=secret,
-                ClientRequestToken=token,
-                Description=description,
-                KmsKeyId=kmskeyid
-            )
+            try:
+                response = self.sm.create_secret_string(
+                    Name=name,
+                    SecretString=secret,
+                    ClientRequestToken=token,
+                    Description=description,
+                    KmsKeyId=kmskey,
+                    Tags=tags
+                )
+            except ClientError as err:
+                print err
+                sys.exit(1)
+        if logoutput:
+            print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
+        print response
 
-        print
+    def getSecretString(self, name, versionid=None, logoutput=None):
+        try:
+            response = self.sm.get_secret_value(
+                SecretId=name,
+                VersionId=versionid
+            )
+        except ClientError as err:
+            print err
+            sys.exit(1)
+
+        if logoutput:
+            print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+            print response["SecretString"]
+            sys.exit(0)
 
 
     def getSecretbyName(self, name):

@@ -11,7 +11,11 @@ class secretsmanager:
 
         return response["VersionId"]
 
-    def create_secret_binary(self, Name, ClientRequestToken, Description, SecretBinary, Tags, KmsKeyId="aws/secretsmanager"):
+    def create_secret_binary(self, Name, ClientRequestToken, Description, SecretBinary, Tags=None, KmsKeyId=None):
+        if Tags == None:
+            Tags = self.generate_tags(Name)
+        if KmsKeyId == None:
+            KmsKeyId = ""
         response = self.smClient.create_secret(
             Name=Name,
             ClientRequestToken=ClientRequestToken,
@@ -23,7 +27,11 @@ class secretsmanager:
 
         return response["ARN"], response["Name"]
 
-    def create_secret_string(self, Name, ClientRequestToken, Description, SecretString, Tags, KmsKeyId="aws/secretsmanager"):
+    def create_secret_string(self, Name, ClientRequestToken, Description, SecretString, Tags=None, KmsKeyId=None):
+        if Tags == None:
+            Tags = self.generate_tags(Name)
+        if KmsKeyId == None:
+            KmsKeyId = ""
         response = self.smClient.create_secret(
             Name=Name,
             ClientRequestToken=ClientRequestToken,
@@ -79,11 +87,15 @@ class secretsmanager:
         return response["ResourcePolicy"]
 
     def get_secret_value(self, SecretId, VersionId=None, VersionStage=None):
-        response = self.smClient.get_secret_value(
-            SecretId=SecretId,
-            VersionId=VersionId,
-            VersionStage=VersionStage
-        )
+        if VersionId:
+            response = self.smClient.get_secret_value(
+                SecretId=SecretId,
+                VersionId=VersionId
+            )
+        else:
+            response = self.smClient.get_secret_value(
+                SecretId=SecretId
+            )
 
         return response
     
@@ -93,26 +105,26 @@ class secretsmanager:
             SecretId=SecretId,
             IncludeDeprecated=IncludeDeprecated
         )
-        versions.append(response["Versions"])
+        versions.extend(response["Versions"])
         while "NextToken" in response:
             response = self.smClient.list_secret_version_ids(
                 SecretId=SecretId,
                 IncludeDeprecated=IncludeDeprecated,
                 NextToken=response["NextToken"]
             )
-            versions.append(response["Versions"])
+            versions.extend(response["Versions"])
         
         return versions
     
     def list_secrets(self):
         secrets = []
         response = self.smClient.list_secrets()
-        secrets.append(response["SecretList"])
+        secrets.extend(response["SecretList"])
         while "NextToken" in response:
             response = self.smClient.list_secrets(
                 NextToken=response["NextToken"]
             )
-            secrets.append(response["SecretList"])
+            secrets.extend(response["SecretList"])
         
         return secrets
     
@@ -212,3 +224,13 @@ class secretsmanager:
         )
 
         return response["ARN"], response["Name"]
+    
+    def generate_tags(self, name):
+        tags = [
+            {
+                'Key': 'Name',
+                'Value': name
+            }
+        ]
+
+        return tags

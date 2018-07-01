@@ -6,24 +6,24 @@ class kms:
     def list_keys(self):
         keys = []
         response = self.kmsClient.list_keys()
-        keys.append(response["Keys"])
+        keys.extend(response["Keys"])
         while "NextToken" in response:
             response = self.kmsClient.list_keys(
                 NextToken=response["NextToken"]
             )
-            keys.append(response["Keys"])
+            keys.extend(response["Keys"])
         
         return keys
 
     def list_aliases(self):
         aliases = []
         response = self.kmsClient.list_aliases()
-        aliases.append(response["Aliases"])
+        aliases.extend(response["Aliases"])
         while "NextToken" in response:
             response = self.kmsClient.list_aliases(
                 NextToken=response["NextToken"]
             )
-            aliases.append(response["Aliases"])
+            aliases.extend(response["Aliases"])
         
         return aliases
     
