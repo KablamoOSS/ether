@@ -16,10 +16,10 @@ def upsertSecretString(ctx, name, secret, description, logoutput=None):
     smtasks.upsertSecretString(name=name, secret=secret, description=description, logoutput=logoutput)
 
 @task
-def getSecretString(ctx, name, logoutput=None):
+def getSecret(ctx, name, logoutput=None):
     session = getBaseSession()
     smtasks = secretsmanagertasks.secretsmanagertasks(session)
-    smtasks.getSecretString(name=name, logoutput=logoutput)
+    smtasks.getSecret(name=name, logoutput=logoutput)
 
 def getBaseSession(region='ap-southeast-2'):
     authentication = auth.authenticate(region)

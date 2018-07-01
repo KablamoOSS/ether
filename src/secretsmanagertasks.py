@@ -53,7 +53,7 @@ class secretsmanagertasks:
             print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
         print response
 
-    def getSecretString(self, name, versionid=None, logoutput=None):
+    def getSecret(self, name, versionid=None, logoutput=None):
         try:
             response = self.sm.get_secret_value(
                 SecretId=name,
@@ -67,7 +67,10 @@ class secretsmanagertasks:
             print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
 
         if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-            print response["SecretString"]
+            if "SecretString" in response:
+                print response["SecretString"]
+            else:
+                print response["SecretBinary"]
             sys.exit(0)
 
 
