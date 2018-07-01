@@ -1,0 +1,17 @@
+.cache/
+*egg-info/
+build/
+dist/
+*.pyc
+credentials.yml
+.coverage
+coverage
+.DS_Store
+.idea/*
+.idea/
+.vscode/
+.vscode/*
+.hypothesis/
+.hypothesis/*
+src/.cache/
+ether/.cache/*
