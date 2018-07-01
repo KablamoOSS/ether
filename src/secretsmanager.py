@@ -193,6 +193,17 @@ class secretsmanager:
 
         return response
 
+    def update_secret_string(self, SecretId, ClientRequestToken, Description, SecretString, KmsKeyId="aws/secretsmanager"):
+        response = self.smClient.update_secret_binary(
+            SecretId=SecretId,
+            ClientRequestToken=ClientRequestToken,
+            Description=Description,
+            SecretString=SecretString,
+            KmsKeyId=KmsKeyId
+        )
+
+        return response
+
     def update_secret_version_stage(self, SecretId, VersionStage, MoveToVersionId):
         response = self.smClient.update_secret_version_stage(
             SecretId=SecretId,
