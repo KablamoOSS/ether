@@ -5,6 +5,9 @@ import uuid
 import awsinputs
 import kmstasks
 import json
+import fileutil
+import base64
+import botocore.errorfactory
 from botocore.exceptions import ClientError
 
 
@@ -13,6 +16,7 @@ class secretsmanagertasks:
     def __init__(self, session):
         self.sm = secretsmanager.secretsmanager(session)
         self.kms = kmstasks.kmstasks(session)
+        self.fs = fileutil.fileutil()
 
     def generatePassword(self):
         password = self.sm.get_random_password()
@@ -52,6 +56,40 @@ class secretsmanagertasks:
         if logoutput:
             print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
         print response
+
+    def upsertSecretsFile(self, name, secretfile, description, kmskey=None, tags=None, token=None, logoutput=None):
+        #if not awsinputs.IsKMSArn(kmskey) or kmskey=="aws/secretsmanager":
+        #    kmskey = self.kms.getKeyARNbyAlias(kmskey)
+        content = self.fs.readSecret(secretfile)
+        if token is None:
+            token = self.generateClientToken()
+        exists = self.getSecretbyName(name)
+        if exists:
+            try:
+                response = self.sm.update_secret_binary(
+                    SecretId=name,
+                    SecretBinary=base64.b64encode(content.encode()),
+                    ClientRequestToken=token,
+                    Description=description, 
+                    KmsKeyId=kmskey
+                )
+            except ClientError as err:
+                print err
+                sys.exit(1)
+        else:
+            try:
+                response = self.sm.create_secret_binary(
+                    Name=name,
+                    SecretBinary=base64.b64encode(content.encode()),
+                    ClientRequestToken=token,
+                    Description=description,
+                    KmsKeyId=kmskey,
+                    Tags=tags
+                )
+            except ClientError as err:
+                print err
+        if logoutput:
+            print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
 
     def getSecret(self, name, versionid=None, logoutput=None):
         try:

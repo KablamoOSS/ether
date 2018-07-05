@@ -194,8 +194,10 @@ class secretsmanager:
             TagKeys=TagKeys
         )
 
-    def update_secret_binary(self, SecretId, ClientRequestToken, Description, SecretBinary, KmsKeyId="aws/secretsmanager"):
-        response = self.smClient.update_secret_binary(
+    def update_secret_binary(self, SecretId, ClientRequestToken, Description, SecretBinary, KmsKeyId=None):
+        if KmsKeyId == None:
+            KmsKeyId = ""
+        response = self.smClient.update_secret(
             SecretId=SecretId,
             ClientRequestToken=ClientRequestToken,
             Description=Description,
@@ -205,8 +207,10 @@ class secretsmanager:
 
         return response
 
-    def update_secret_string(self, SecretId, ClientRequestToken, Description, SecretString, KmsKeyId="aws/secretsmanager"):
-        response = self.smClient.update_secret_binary(
+    def update_secret_string(self, SecretId, ClientRequestToken, Description, SecretString, KmsKeyId=None):
+        if KmsKeyId == None:
+            KmsKeyId = ""
+        response = self.smClient.update_secret(
             SecretId=SecretId,
             ClientRequestToken=ClientRequestToken,
             Description=Description,

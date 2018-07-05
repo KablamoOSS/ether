@@ -16,6 +16,12 @@ def upsertSecretString(ctx, name, secret, description, logoutput=None):
     smtasks.upsertSecretString(name=name, secret=secret, description=description, logoutput=logoutput)
 
 @task
+def upsertSecretFile(ctx, name, secretfile, description, logoutput=None):
+    session = getBaseSession()
+    smtasks = secretsmanagertasks.secretsmanagertasks(session)
+    smtasks.upsertSecretsFile(name=name, secretfile=secretfile, description=description, logoutput=logoutput)
+
+@task
 def getSecret(ctx, name, logoutput=None):
     session = getBaseSession()
     smtasks = secretsmanagertasks.secretsmanagertasks(session)
