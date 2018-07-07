@@ -34,7 +34,7 @@ class secretsmanagertasks:
                     SecretId=name,
                     SecretString=secret,
                     ClientRequestToken=token,
-                    Description=description, 
+                    Description=description,
                     KmsKeyId=kmskey
                 )
             except ClientError as err:
@@ -70,7 +70,7 @@ class secretsmanagertasks:
                     SecretId=name,
                     SecretBinary=content.encode(),
                     ClientRequestToken=token,
-                    Description=description, 
+                    Description=description,
                     KmsKeyId=kmskey
                 )
             except ClientError as err:
@@ -125,8 +125,8 @@ class secretsmanagertasks:
             if arn in obj["ARN"]:
                 return True
         return False
-    
+
     def generateClientToken(self):
         token = uuid.uuid4()
-        
+
         return str(token)
