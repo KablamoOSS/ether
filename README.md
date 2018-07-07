@@ -17,12 +17,14 @@ cat /tmp/secret.json
 ```
 
 ```
+ASSUMED_ROLE='arn:aws:iam::167464XXXXXX:role/StackCreator'
+MFA_SERIAL='arn:aws:iam::623551XXXXXX:mfa/IAM-F.Last'
 TOKEN=123456
 docker run \
     -v ~/.aws:/root/.aws \
     -v /tmp:/tmp \
-    -e ASSUMED_ROLE='arn:aws:iam::167464XXXXXX:role/StackCreator' \
-    -e MFA_SERIAL='arn:aws:iam::623551XXXXXX:mfa/IAM-F.Last' \
+    -e ASSUMED_ROLE=${ASSUMED_ROLE} \
+    -e MFA_SERIAL=${MFA_SERIAL} \
     -e TOKEN=${TOKEN} \
     ether upsertSecretFile myLoginFileName /tmp/secret.json "Login details for my secret cool interweb thing"
 ```
@@ -33,9 +35,13 @@ TOKEN=123456
 docker run \
     -v ~/.aws:/root/.aws \
     -v /tmp:/tmp \
-    -e ASSUMED_ROLE='arn:aws:iam::167464XXXXXX:role/StackCreator' \
-    -e MFA_SERIAL='arn:aws:iam::623551XXXXXX:mfa/IAM-F.Last' \
+    -e ASSUMED_ROLE=${ASSUMED_ROLE} \
+    -e MFA_SERIAL=${MFA_SERIAL} \
     -e TOKEN=${TOKEN} \
     ether getSecret myLoginFileName
-ewogICJ1c2VybmFtZSI6ICJKb21teUpvSm8iLAogICJwYXNzd29yZCI6ICJQYXNzd29yZDEyIgp9Cg==
+{
+  "username": "JommyJoJo",
+  "password": "Password12"
+}
 ```
+

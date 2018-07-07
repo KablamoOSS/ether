@@ -68,7 +68,7 @@ class secretsmanagertasks:
             try:
                 response = self.sm.update_secret_binary(
                     SecretId=name,
-                    SecretBinary=base64.b64encode(content.encode()),
+                    SecretBinary=content.encode(),
                     ClientRequestToken=token,
                     Description=description, 
                     KmsKeyId=kmskey
@@ -80,7 +80,7 @@ class secretsmanagertasks:
             try:
                 response = self.sm.create_secret_binary(
                     Name=name,
-                    SecretBinary=base64.b64encode(content.encode()),
+                    SecretBinary=content.encode(),
                     ClientRequestToken=token,
                     Description=description,
                     KmsKeyId=kmskey,
