@@ -3,7 +3,7 @@ Programatically manage secrets in AWS secrets manager.
 
 ## Build
 
-`docker built -t ether .`
+`docker build -t ether .`
 
 ## Basic Usage
 
