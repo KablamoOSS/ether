@@ -185,7 +185,7 @@ class secretsmanager:
     def tag_resource(self, SecretId, Tags):
         self.smClient.tag_resource(
             SecretId=SecretId,
-            Tags=Tags
+            Tags=self.generate_tags(name=SecretId)
         )
 
     def untag_resource(self, SecretId, TagKeys):

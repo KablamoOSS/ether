@@ -91,6 +91,49 @@ class secretsmanagertasks:
         if logoutput:
             print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
 
+    def rotateSecret(self, name, token=None, rotationdays=60, logoutput=None):
+        if token is None:
+            token = self.generateClientToken()
+        exists = self.getSecretbyName(name)
+        if exists:
+            try:
+                response = self.sm.rotate_secret(
+                    SecretId = name,
+                    ClientRequestToken=token,
+                    RotationRules=self.generateRotationRules(rotationdays)
+                )
+            except ClientError as err:
+                print err
+                sys.exit(1)
+        else:
+            print "Secret: " + name + " does not exist, cannot rotate secret"
+            sys.exit(1)
+        
+        if logoutput:
+            print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
+    
+    def rotateSecretbyLambda(self, name, lambdaarn, token=None, rotationdays=60, logoutput=None):
+        if token is None:
+            token = self.generateClientToken()
+        exists = self.getSecretbyName(name)
+        if exists:
+            try:
+                response = self.sm.rotate_secret_lambda(
+                    SecretId = name,
+                    ClientRequestToken=token,
+                    RotationRules=self.generateRotationRules(rotationdays),
+                    RotationLambdaARN=lambdaarn
+                )
+            except ClientError as err:
+                print err
+                sys.exit(1)
+        else:
+            print "Secret: " + name + " does not exist, cannot rotate secret"
+            sys.exit(1)
+        
+        if logoutput:
+            print json.dumps(response, default=str, sort_keys=True, indent=4, separators=(',', ': '))
+
     def getSecret(self, name, versionid=None, logoutput=None):
         try:
             response = self.sm.get_secret_value(
@@ -130,3 +173,10 @@ class secretsmanagertasks:
         token = uuid.uuid4()
 
         return str(token)
+
+    def generateRotationRules(self, days=60):
+        rules = {
+           'AutomaticallyAfterDays': days
+        }
+
+        return rules

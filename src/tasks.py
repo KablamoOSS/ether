@@ -10,16 +10,28 @@ def generateRandPassword(ctx):
     smtasks.generatePassword()
 
 @task
-def upsertSecretString(ctx, name, secret, description, logoutput=None):
+def upsertSecretString(ctx, name, secret, description, kmskey=None, logoutput=None):
     session = getBaseSession()
     smtasks = secretsmanagertasks.secretsmanagertasks(session)
     smtasks.upsertSecretString(name=name, secret=secret, description=description, logoutput=logoutput)
 
 @task
-def upsertSecretFile(ctx, name, secretfile, description, logoutput=None):
+def upsertSecretFile(ctx, name, secretfile, description, kmskey=None, logoutput=None):
     session = getBaseSession()
     smtasks = secretsmanagertasks.secretsmanagertasks(session)
     smtasks.upsertSecretsFile(name=name, secretfile=secretfile, description=description, logoutput=logoutput)
+
+@task
+def rotateSecret(ctx, name, rotationdays, logoutput=None):
+    session = getBaseSession()
+    smtasks = secretsmanagertasks.secretsmanagertasks(session)
+    smtasks.rotateSecret(name=name, rotationdays=rotationdays, logoutput=logoutput)
+
+@task
+def rotateSecretbyLambda(ctx, name, rotationdays, lambdaarn, logoutput=None):
+    session = getBaseSession()
+    smtasks = secretsmanagertasks.secretsmanagertasks(session)
+    smtasks.rotateSecretbyLambda(name=name, rotationdays=rotationdays, lambdaarn=lambdaarn, logoutput=logoutput)
 
 @task
 def getSecret(ctx, name, logoutput=None):
